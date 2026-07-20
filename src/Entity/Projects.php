@@ -2,10 +2,10 @@
 
 namespace App\Entity;
 
-use App\Repository\PprojectsRepository;
+use App\Repository\ProjectsRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: PprojectsRepository::class)]
+#[ORM\Entity(repositoryClass: ProjectsRepository::class)]
 class Projects
 {
     #[ORM\Id]

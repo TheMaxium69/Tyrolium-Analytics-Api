@@ -31,7 +31,7 @@ final class ProjectsController extends AbstractController
         $project->setTag($tag);
         $project->setDomainNames($domain_names);
 
-        $project->setUseritiumId('useritium_id'); // api useritium requis ?? //
+        $project->setUseritiumId('useritium_id'); #1 pour essayer           // api useritium requis ?? //
 
         $em->persist($project);
         $em->flush();
@@ -42,6 +42,8 @@ final class ProjectsController extends AbstractController
                 'id' => $project->getId(),
                 'tag' => $project->getTag(),
                 'domain_names' => $project->getDomainNames(),
+                'useritium_id' => $project->getUseritiumId(),
+                'created_at' => $project->getCreatedAt(),
             ]
         ]);
     }
