@@ -22,6 +22,10 @@ class Projects
     #[ORM\Column]
     private ?\DateTimeImmutable $created_At = null;
 
+    public function __construct(){
+        $this->created_At = new \DateTimeImmutable();
+    }
+
     #[ORM\Column]
     private ?int $useritium_id = null;
 
