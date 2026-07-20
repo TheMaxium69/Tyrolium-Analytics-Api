@@ -24,8 +24,8 @@ final class ProjectsController extends AbstractController
             ]);
         }
 
-        $domain_good = bin2hex(random_bytes(5));
-        $tag = 'TyroTag-' . $domain_good;
+        $clef = uniqid(bin2hex(random_bytes(5)));
+        $tag = 'TyroTag-' . $clef;
 
         $project = new Projects();
         $project->setTag($tag);
@@ -38,13 +38,7 @@ final class ProjectsController extends AbstractController
 
         return $this->json([
             'success' => true,
-            'project' => [
-                'id' => $project->getId(),
-                'tag' => $project->getTag(),
-                'domain_names' => $project->getDomainNames(),
-                'useritium_id' => $project->getUseritiumId(),
-                'created_at' => $project->getCreatedAt(),
-            ]
-        ]);
+            'result' => $project
+        ], 200, [], ['groups' => ['user:sign']]);
     }
 }
