@@ -18,19 +18,15 @@ final class InputController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
 
-        if (!$data) {
-            return $this->json(['error' => 'Données JSON invalides.']);
-        }
-
-
         if (!isset($data['tag_id'])) {
             return $this->json(['error' => 'Le champ tag_id est obligatoire.']);
         }
 
         $project = $projectsRepository->find($data['tag_id']);
-        if (!$project) {
-            return $this->json(['error' => 'Project non trouvé pour ce tag_id.']);
-        }
+
+            if (!$project) {
+                return $this->json(['error' => 'Project non trouvé pour ce tag_id.']);
+            }
 
 
         $input = new Input();
@@ -39,7 +35,7 @@ final class InputController extends AbstractController
         $input->setIp($data['ip']);
         $input->setPageName($data['page_name']);
         $input->setUri($data['uri']);
-        $input->setIsLogin($data['isLogin']); // La vue dois être forcément Login ou nn ?? //
+        $input->setIsLogin($data['isLogin']);
 
 
         $entityManager->persist($input);
