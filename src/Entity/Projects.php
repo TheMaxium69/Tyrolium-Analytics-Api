@@ -12,28 +12,24 @@ class Projects
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['tag:data'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['tag:data'])]
+    #[Groups(['post:tag'])]
     private ?string $tag = null;
 
     #[ORM\Column]
-    #[Groups(['tag:data'])]
     private array $domain_names = [];
 
     #[ORM\Column]
-    #[Groups(['tag:data'])]
+    private ?int $useritium_id = null;
+
+    #[ORM\Column]
     private ?\DateTimeImmutable $created_At = null;
 
     public function __construct(){
         $this->created_At = new \DateTimeImmutable();
     }
-
-    #[ORM\Column]
-    #[Groups(['tag:data'])]
-    private ?int $useritium_id = null;
 
     public function getId(): ?int
     {
