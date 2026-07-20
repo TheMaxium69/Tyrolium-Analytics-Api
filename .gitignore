@@ -1,3 +1,4 @@
+.idea/
 
 ###> symfony/framework-bundle ###
 /.env
@@ -10,6 +11,7 @@
 /public/bundles/
 /var/
 /vendor/
+migrations/
 ###< symfony/framework-bundle ###
 
 ###> phpunit/phpunit ###
