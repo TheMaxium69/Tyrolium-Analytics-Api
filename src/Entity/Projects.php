@@ -6,7 +6,7 @@ use App\Repository\PprojectsRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PprojectsRepository::class)]
-class projects
+class Projects
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -18,6 +18,12 @@ class projects
 
     #[ORM\Column]
     private array $domain_names = [];
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $created_At = null;
+
+    #[ORM\Column]
+    private ?int $useritium_id = null;
 
     public function getId(): ?int
     {
@@ -51,6 +57,30 @@ class projects
     public function setDomainNames(array $domain_names): static
     {
         $this->domain_names = $domain_names;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->created_At;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $created_At): static
+    {
+        $this->created_At = $created_At;
+
+        return $this;
+    }
+
+    public function getUseritiumId(): ?int
+    {
+        return $this->useritium_id;
+    }
+
+    public function setUseritiumId(int $useritium_id): static
+    {
+        $this->useritium_id = $useritium_id;
 
         return $this;
     }
