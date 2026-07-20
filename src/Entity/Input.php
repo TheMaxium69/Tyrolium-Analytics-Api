@@ -16,7 +16,7 @@ class Input
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Projects $tag_id = null;
+    private ?Projects $tag = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $ip = null;
@@ -44,12 +44,12 @@ class Input
 
     public function getTagId(): ?Projects
     {
-        return $this->tag_id;
+        return $this->tag;
     }
 
     public function setTagId(?Projects $tag_id): static
     {
-        $this->tag_id = $tag_id;
+        $this->tag = $tag_id;
 
         return $this;
     }
