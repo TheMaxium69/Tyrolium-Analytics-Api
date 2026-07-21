@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ProjectsRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ProjectsRepository::class)]
 class Projects
@@ -12,19 +12,23 @@ class Projects
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['get:project'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['post:tag'])]
+    #[Groups(['post:tag', 'get:project'])]
     private ?string $tag = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'json')]
+    #[Groups(['get:project'])]
     private array $domain_names = [];
 
     #[ORM\Column]
+    #[Groups(['get:project'])]
     private ?int $useritium_id = null;
 
     #[ORM\Column]
+    #[Groups(['get:project'])]
     private ?\DateTimeImmutable $created_At = null;
 
     public function __construct(){
