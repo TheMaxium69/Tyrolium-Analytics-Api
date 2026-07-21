@@ -13,7 +13,7 @@ use App\Repository\ProjectsRepository;
 final class ProjectsController extends AbstractController
 {
     #[Route('/tag', name: 'app_projects', methods: ['POST'])]
-    public function createTag(Request $request, EntityManagerInterface $em): Response
+    public function createTag(Request $request, EntityManagerInterface $em, projectsRepository $projectsRepo): Response
     {
         $data = json_decode($request->getContent(), true);
 
@@ -24,11 +24,9 @@ final class ProjectsController extends AbstractController
 
             if(!empty($domain_names[0])) {
 
-                // TODO : ajouter le faite de verifier que le token est pas vide
                 if (!empty($useritium_token)) {
 
-                    // TODO : ajouter une verification que chaque nom de domaine est pas déjà existant dans la base
-                    $projects = $this->findAll();
+                    $projects = $projectsRepo->findAll();
                     foreach ($projects as $project) {
                         foreach ($project->getDomainNames() as $existingDomain) {
                             if (in_array($existingDomain, $domain_names, true)) {
@@ -92,7 +90,7 @@ final class ProjectsController extends AbstractController
         return $this->json([
             'status' => "good",
             'result' => $projects
-        ], 200, [], ['groups' => ['post:tag']]);
+        ], 200, [], ['groups' => ['get:project']]);
     }
 
 
