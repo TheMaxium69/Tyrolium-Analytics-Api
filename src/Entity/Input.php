@@ -19,21 +19,27 @@ class Input
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['input:read'])]
     private ?Projects $tag = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['input:read'])]
     private ?string $ip = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['input:read'])]
     private ?string $page_name = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['input:read'])]
     private ?string $uri = null;
 
     #[ORM\Column]
+    #[Groups(['input:read'])]
     private ?bool $isLogin = null;
 
     #[ORM\Column]
+    #[Groups(['input:read'])]
     private ?\DateTimeImmutable $CreatedAt = null;
 
     public function getId(): ?int
