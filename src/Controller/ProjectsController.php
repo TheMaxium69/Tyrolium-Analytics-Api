@@ -83,7 +83,7 @@ final class ProjectsController extends AbstractController
 
     // TODO : afficher toute le project (donc avec ces tag)
     #[Route('/projects/getAll', name: 'app_projects_all', methods: ['GET'])]
-    public function getAllTag(Request $request, EntityManagerInterface $em, ProjectsRepository $projectsRepo): Response
+    public function getAllProjects(Request $request, EntityManagerInterface $em, ProjectsRepository $projectsRepo): Response
     {
         $projects = $projectsRepo->findAll();
 
@@ -95,11 +95,11 @@ final class ProjectsController extends AbstractController
 
 
 
-    // TODO : FINI TON CRUD (Delete, Update ajouter un domaine a un tag)
-    #[Route('/projets/delete', name: 'app_projects_delete', methods: ['DELETE'])]
-    public function getDeleteProjet(int $id): Response
+    // TODO : FINI TON CRUD (Delete)
+    #[Route('/projets/delete/{id}', name: 'app_projects_delete', methods: ['DELETE'])]
+    public function getDeleteProjet(int $id, EntityManagerInterface $em, ProjectsRepository $projectsRepo): Response
     {
-        $projects = $this->projectRepo->find($id);
+        $projects = $projectsRepo->find($id);
 
         if (!$projects) {
             return $this->json([
@@ -108,8 +108,60 @@ final class ProjectsController extends AbstractController
             ]);
         }
 
-        $this->projectRepo->remove($projects);
-        $this->projectRepo->flush();
+        $em->remove($projects);
+        $em->flush();
+
+        return $this->json([
+            'status' => "good",
+            'message' => 'project has been deleted'
+        ]);
+    }
+
+
+
+    // TODO : FINI TON CRUD (Update ajouter un domaine a un tag)
+    #[Route('/domain/update/{id}', name: 'app_domain_update', methods: ['PUT'])]
+    public function getUpdateDomain(int $id, EntityManagerInterface $em, ProjectsRepository $projectsRepo, Request $request,): Response
+    {
+        $projects = $projectsRepo->find($id);
+        if (!$projects) {
+            return $this->json([
+                'status' => "err",
+                'message' => 'project not found'
+            ]);
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        $domain_names = $data['domain_names'];
+
+        if (!$domain_names) {
+            return $this->json([
+                'status' => "err",
+                'message' => 'domaine invalide'
+            ]);
+        }
+
+        // je vérifie si le domain que j'ajoute n'existe pas deja
+        $domains = $projects->getDomainNames();
+
+        if (in_array($id, $domains, true)) {
+            return $this->json([
+                'status' => "err",
+                'message' => 'domain name already exists'
+            ]);
+        }
+
+        $domains = $domain_names;
+
+        $projects->setDomainNames($domains);
+        $em->persist($projects);
+        $em->flush();
+
+        return $this->json([
+            'status' => "good",
+            'result' => $projects
+        ], 200, [], ['groups' => ['get:project']]);
     }
 
 }
