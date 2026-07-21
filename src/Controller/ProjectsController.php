@@ -132,29 +132,52 @@ final class ProjectsController extends AbstractController
         }
 
         $data = json_decode($request->getContent(), true);
+        $newDomain = $data['domain_names'];
 
-        $domain_names = $data['domain_names'];
-
-        if (!$domain_names) {
+        if (!$newDomain) {
             return $this->json([
                 'status' => "err",
                 'message' => 'domaine invalide'
             ]);
         }
 
-        // je vérifie si le domain que j'ajoute n'existe pas deja
-        $domains = $projects->getDomainNames();
+        $existingDomains = $projects->getDomainNames();
+        $domainToAdd = (array) $newDomain;
 
-        if (in_array($id, $domains, true)) {
+        $alreadyExists = array_intersect($existingDomains, $domainToAdd);
+
+        if (!empty($alreadyExists)) {
             return $this->json([
                 'status' => "err",
-                'message' => 'domain name already exists'
+                'message' => 'domaine already exists',
+                'doublon' => array_values($alreadyExists) // pour affiche les domain en double
             ]);
         }
 
-        $domains = $domain_names;
+        $merged = array_merge($existingDomains, $domainToAdd);
+        $cleanDomains = array_values(array_unique($merged));
 
-        $projects->setDomainNames($domains);
+
+
+        // J'ai fait ca au début mais j'avais une erreur ca me créer un tableau dans un tableau ligne 175
+        // Et quand je l'enlever ca remplacer ce qui avais != ajouter
+
+//        // je vérifie si le domain que j'ajoute n'existe pas deja
+//        $domains = $projects->getDomainNames();
+//
+//        if (in_array($id, $domains, true)) {
+//            return $this->json([
+//                'status' => "err",
+//                'message' => 'domain name already exists'
+//            ]);
+//        }
+//
+//        $domains[] = $newDomain;
+//
+//        $projects->setDomainNames($domains);
+
+        
+        $projects->setDomainNames($cleanDomains);
         $em->persist($projects);
         $em->flush();
 
