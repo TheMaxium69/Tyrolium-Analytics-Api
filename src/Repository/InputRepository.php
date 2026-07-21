@@ -14,6 +14,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Input[]    findAll()
  * @method Input[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
+
 class InputRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -21,29 +22,40 @@ class InputRepository extends ServiceEntityRepository
         parent::__construct($registry, Input::class);
     }
 
+    public function findByAdvancedFilters(array $filters): array {
 
-    // /**
-    //  * @return Input[] Returns an array of Input objects
-    //  */
-    // public function findByExampleField($value): array
-    // {
-    //     return $this->createQueryBuilder('i')
-    //         ->andWhere('i.exampleField = :val')
-    //         ->setParameter('val', $value)
-    //         ->orderBy('i.id', 'ASC')
-    //         ->setMaxResults(10)
-    //         ->getQuery()
-    //         ->getResult()
-    //     ;
-    // }
+        $qb = $this->createQueryBuilder('i');
 
-    // public function findOneBySomeField($value): ?Input
-    // {
-    //     return $this->createQueryBuilder('i')
-    //         ->andWhere('i.exampleField = :val')
-    //         ->setParameter('val', $value)
-    //         ->getQuery()
-    //         ->getOneOrNullResult()
-    //     ;
-    // }
+        // Filtre par ID de projet
+        if (!empty($filters['projectId'])) {
+            $qb->andWhere('i.tag = :projectId')
+                ->setParameter('projectId', $filters['projectId']);
+        }
+
+        // Filtre par IP
+        if (!empty($filters['ip'])) {
+            $qb->andWhere('i.ip = :ip')
+                ->setParameter('ip', $filters['ip']);
+        }
+
+        // Filtre par nom de page
+        if (!empty($filters['pageName'])) {
+            $qb->andWhere('i.page_name = :pageName')
+                ->setParameter('pageName', $filters['pageName']);
+        }
+
+        // Filtre par URI
+        if (!empty($filters['uri'])) {
+            $qb->andWhere('i.uri = :uri')
+                ->setParameter('uri', $filters['uri']);
+        }
+
+        // Filtre par id useritium
+       // if (!empty($filters['useritiumId'])) {      // J'ai pas le useritium id donc je le commente
+       // }
+
+
+        return $qb->getQuery()->getResult();
+    }
+
 }
