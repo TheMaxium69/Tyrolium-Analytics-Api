@@ -14,7 +14,6 @@ class Input
     #[ORM\GeneratedValue]
     #[ORM\Column]
     #[Groups(['input:read'])]
-
     private ?int $id = null;
 
     #[ORM\ManyToOne]
@@ -43,7 +42,7 @@ class Input
     private ?\DateTimeImmutable $created_at = null;
 
     public function __construct(){
-        $this->CreatedAt = new \DateTimeImmutable();
+        $this->created_at = new \DateTimeImmutable();
     }
 
     public function getId(): ?int

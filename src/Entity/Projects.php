@@ -12,11 +12,11 @@ class Projects
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['get:project'])]
+    #[Groups(['get:project','input:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['post:tag', 'get:project'])]
+    #[Groups(['post:tag', 'get:project','input:read'])]
     private ?string $tag = null;
 
     #[ORM\Column(type: 'json')]

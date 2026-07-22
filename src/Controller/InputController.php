@@ -28,7 +28,7 @@ final class InputController extends AbstractController
         $is_login = $data['is_login'];
 
 
-        if (!$project_tag || !$ip || !$page_name || !$uri || !$is_login) {
+        if (!isset($data['project_tag']) || !isset($data['ip']) || !isset($data['page_name']) || !isset($data['uri']) || !isset($data['is_login'])) {
 
             return $this->json([
                 'status' => 'error',
@@ -71,7 +71,6 @@ final class InputController extends AbstractController
 
 
 
-
     #[Route('/input', name: 'app_input_list', methods: ['GET'])]
     public function index(InputRepository $inputRepository): JsonResponse {
 
@@ -81,15 +80,17 @@ final class InputController extends AbstractController
             'status' => 'success',
             'message' => 'Input list founded.',
             'result' => $inputs
-        ], 200, [], ['groups' => 'input:read']);
+        ], 200, [], ['groups' => 'input:read', 'post:tag']);
     }
 
 
     #[Route('/input/search', name: 'app_input_search', methods: ['GET'])]                       // TODO : une route read by project (je te donne l'id d'un projet et tu me donne seulement ces vue a lui)
-    public function search(Request $request, InputRepository $inputRepository): JsonResponse {  // TODO : avec l'id de useritium et avec l'ip aussi, et chaque page, uri, ip
+    public function search(Request $request, InputRepository $inputRepository, ProjectsRepository $projectsRepository): JsonResponse {  // TODO : avec l'id de useritium et avec l'ip aussi, et chaque page, uri, ip
+
+        $project_tag = $request->query->get('project_tag');
 
         if ($project_tag !==null) {
-            $project_tag = $projectRepository->find($project_tag);
+            $project_tag = $projectsRepository->find($project_tag);
             if (!$project_tag) {
                 return $this->json([
                     'status' => 'error',
@@ -101,7 +102,7 @@ final class InputController extends AbstractController
 
 
         $filters = [
-            'projectTag' => $request->query->get('project_tag'),
+            'project_tag' => $request->query->get('project_tag'),
             'useritiumId' => $request->query->get('useritium_id'),
             'ip' => $request->query->get('ip'),
             'pageName' => $request->query->get('page_name'),

@@ -27,9 +27,9 @@ class InputRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('i');
 
         // Filtre par ID de projet
-        if (!empty($filters['projectId'])) {
-            $qb->andWhere('i.tag = :projectId')
-                ->setParameter('projectId', $filters['projectId']);
+        if (!empty($filters['$project_tag'])) {
+            $qb->andWhere('i.tag = :$project_tag')
+                ->setParameter('$project_tag', $filters['$project_tag']);
         }
 
         // Filtre par IP
