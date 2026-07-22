@@ -55,6 +55,7 @@ final class ProjectsController extends AbstractController
 
                     return $this->json([
                         'status' => "good",
+                        'message' => 'project created',
                         'result' => $project
                     ], 200, [], ['groups' => ['post:tag']]);
 
@@ -89,6 +90,7 @@ final class ProjectsController extends AbstractController
 
         return $this->json([
             'status' => "good",
+            'message' => "all projects",
             'result' => $projects
         ], 200, [], ['groups' => ['get:project']]);
     }
@@ -104,7 +106,7 @@ final class ProjectsController extends AbstractController
         if (!$projects) {
             return $this->json([
                 'status' => "err",
-                'result' => 'project not found'
+                'message' => 'project not found'
             ]);
         }
 
@@ -151,12 +153,12 @@ final class ProjectsController extends AbstractController
                 if ($project->getId() == $projects->getId()) {
                     return $this->json([
                         'status' => "err",
-                        'result' => 'domaine already exists in this project'
+                        'message' => 'domaine already exists in this project'
                     ]);
                 }
                 return $this->json([
                     'status' => "err",
-                    'result' => 'domaine already exists in other project'
+                    'message' => 'domaine already exists in other project'
                 ]);
             }
         }
