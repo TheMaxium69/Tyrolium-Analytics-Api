@@ -20,7 +20,7 @@ class Input
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['input:read'])]
-    private ?Projects $tag = null;
+    private ?Projects $project_tag = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Groups(['input:read'])]
@@ -28,7 +28,7 @@ class Input
 
     #[ORM\Column(length: 255)]
     #[Groups(['input:read'])]
-    private ?string $page_name = null; // maj_maj
+    private ?string $page_name = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Groups(['input:read'])]
@@ -36,11 +36,11 @@ class Input
 
     #[ORM\Column]
     #[Groups(['input:read'])]
-    private ?bool $isLogin = null; // majMaj
+    private ?bool $is_login = null;
 
     #[ORM\Column]
     #[Groups(['input:read'])]
-    private ?\DateTimeImmutable $CreatedAt = null; // MajMaj
+    private ?\DateTimeImmutable $created_at = null;
 
     public function __construct(){
         $this->CreatedAt = new \DateTimeImmutable();
@@ -58,14 +58,14 @@ class Input
         return $this;
     }
 
-    public function getTagId(): ?Projects
+    public function getProjectTag(): ?Projects
     {
-        return $this->tag;
+        return $this->project_tag;
     }
 
-    public function setTagId(?Projects $tag_id): static
+    public function setProjectTag(?Projects $project_tag): static
     {
-        $this->tag = $tag_id;
+        $this->project_tag = $project_tag;
 
         return $this;
     }
@@ -108,24 +108,24 @@ class Input
 
     public function isLogin(): ?bool
     {
-        return $this->isLogin;
+        return $this->is_login;
     }
 
-    public function setIsLogin(bool $isLogin): static
+    public function setIsLogin(bool $is_login): static
     {
-        $this->isLogin = $isLogin;
+        $this->is_login = $is_login;
 
         return $this;
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->CreatedAt;
+        return $this->created_at;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $CreatedAt): static
+    public function setCreatedAt(\DateTimeImmutable $created_at): static
     {
-        $this->CreatedAt = $CreatedAt;
+        $this->created_at = $created_at;
 
         return $this;
     }
