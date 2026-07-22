@@ -161,10 +161,10 @@ final class ProjectsController extends AbstractController
             }
         }
 
-        $existingDomains = $projects->getDomainNames();
-        $existingDomains[] = $newDomain;
+        $existing_domains = $projects->getDomainNames();
+        $existing_domains[] = $new_domain;
 
-        $projects->setDomainNames($existingDomains);
+        $projects->setDomainNames($existing_domains);
 
         $em->persist($projects);
         $em->flush();
