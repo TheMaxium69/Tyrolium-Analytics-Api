@@ -28,7 +28,7 @@ class Input
 
     #[ORM\Column(length: 255)]
     #[Groups(['input:read'])]
-    private ?string $page_name = null;
+    private ?string $page_name = null; // maj_maj
 
     #[ORM\Column(type: Types::TEXT)]
     #[Groups(['input:read'])]
@@ -36,11 +36,15 @@ class Input
 
     #[ORM\Column]
     #[Groups(['input:read'])]
-    private ?bool $isLogin = null;
+    private ?bool $isLogin = null; // majMaj
 
     #[ORM\Column]
     #[Groups(['input:read'])]
-    private ?\DateTimeImmutable $CreatedAt = null;
+    private ?\DateTimeImmutable $CreatedAt = null; // MajMaj
+
+    public function __construct(){
+        $this->CreatedAt = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {

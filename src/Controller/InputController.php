@@ -18,31 +18,35 @@ final class InputController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
 
-        $requiredFields = ['tag_id', 'ip', 'page_name', 'uri', 'isLogin'];      // TODO : verifier bien tout les champs obligatoire
-        foreach ($requiredFields as $field) {
-            if (!isset($data[$field])) {
-                return $this->json([
-                    'status' => 'error',
-                    'message' => "Le champ '$field' est obligatoire.",
-                    'result' => null
-                ]);
-            }
+        $tag_id = $data['tag_id'];
+        $ip = $data['ip'];
+        $page_name = $data['page_name'];
+        $uri = $data['uri'];
+        $isLogin = $data['isLogin'];
+
+        if (!$tag_id || !$ip || !$page_name || !$uri || !$isLogin) {
+            return $this->json([
+                'status' => 'error',
+                'message' => "Un champ obligatoire n'est pas remplie."
+            ]);
         }
 
-        $project = $projectsRepository->find($data['tag_id']);
+        $project = $projectsRepository->find($tag_id);
 
         if (!$project) {
-            return $this->json(['error' => 'Project non trouvé pour ce tag_id.']);
+            return $this->json([
+                'status' => 'err',
+                'message' => 'Project non trouvé pour ce tag.'
+            ]);
         }
 
         $input = new Input();
         $input->setTagId($project);
 
-        $input->setIp($data['ip']);
-        $input->setPageName($data['page_name']);
-        $input->setUri($data['uri']);
-        $input->setIsLogin($data['isLogin']);
-        $input->setCreatedAt(new \DateTimeImmutable());       // TODO : ajouter la date "CreatedAt"
+        $input->setIp($ip);
+        $input->setPageName($page_name);
+        $input->setUri($uri);
+        $input->setIsLogin($isLogin);
 
 
         $entityManager->persist($input);
@@ -52,7 +56,7 @@ final class InputController extends AbstractController
             'status' => 'success',                      // TODO : mettre en place le group / ancre
             'message' => 'Input créé avec succès',
             'result' => $input
-        ], context: ['groups' => 'input:read']);
+        ], 200, [], ['groups' => 'input:read']);
     }
 
 
@@ -111,7 +115,7 @@ final class InputController extends AbstractController
 
         return $this->json([
             'status' => 'success',
-            'message' => count($inputs) > 0 ? 'Résultats trouvés.' : 'Aucun résultat.',
+            'message' => "Résultat trouvés.",
             'result' => $inputs
         ], context: ['groups' => 'input:read']);
     }

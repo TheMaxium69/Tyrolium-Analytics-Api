@@ -83,7 +83,7 @@ final class ProjectsController extends AbstractController
 
     // TODO : afficher toute le project (donc avec ces tag)
     #[Route('/projects/getAll', name: 'app_projects_all', methods: ['GET'])]
-    public function getAllProjects(Request $request, EntityManagerInterface $em, ProjectsRepository $projectsRepo): Response
+    public function getAllProjects(ProjectsRepository $projectsRepo): Response
     {
         $projects = $projectsRepo->findAll();
 
@@ -141,48 +141,19 @@ final class ProjectsController extends AbstractController
             ]);
         }
 
+        // TODO : verifi est-ce que le domain existe dans le projet actuel ou dans un autre projet
+
         $existingDomains = $projects->getDomainNames();
-        $domainToAdd = (array) $newDomain;
+        $existingDomains[] = $newDomain;
 
-        $alreadyExists = array_intersect($existingDomains, $domainToAdd);
+        $projects->setDomainNames($existingDomains);
 
-        if (!empty($alreadyExists)) {
-            return $this->json([
-                'status' => "err",
-                'message' => 'domaine already exists',
-                'doublon' => array_values($alreadyExists) // pour affiche les domain en double
-            ]);
-        }
-
-        $merged = array_merge($existingDomains, $domainToAdd);
-        $cleanDomains = array_values(array_unique($merged));
-
-
-
-        // J'ai fait ca au début mais j'avais une erreur ca me créer un tableau dans un tableau ligne 175
-        // Et quand je l'enlever ca remplacer ce qui avais != ajouter
-
-//        // je vérifie si le domain que j'ajoute n'existe pas deja
-//        $domains = $projects->getDomainNames();
-//
-//        if (in_array($id, $domains, true)) {
-//            return $this->json([
-//                'status' => "err",
-//                'message' => 'domain name already exists'
-//            ]);
-//        }
-//
-//        $domains[] = $newDomain;
-//
-//        $projects->setDomainNames($domains);
-
-        
-        $projects->setDomainNames($cleanDomains);
         $em->persist($projects);
         $em->flush();
 
         return $this->json([
             'status' => "good",
+            "message" => "domain added to project",
             'result' => $projects
         ], 200, [], ['groups' => ['get:project']]);
     }
