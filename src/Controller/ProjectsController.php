@@ -132,9 +132,9 @@ final class ProjectsController extends AbstractController
         }
 
         $data = json_decode($request->getContent(), true);
-        $newDomain = $data['domain_names'];
+        $new_domain = $data['domain_names'];
 
-        if (!$newDomain) {
+        if (!$new_domain) {
             return $this->json([
                 'status' => "err",
                 'message' => 'domaine invalide'
@@ -142,6 +142,24 @@ final class ProjectsController extends AbstractController
         }
 
         // TODO : verifi est-ce que le domain existe dans le projet actuel ou dans un autre projet
+        $all_projects = $projectsRepo->findAll();
+
+        foreach ($all_projects as $project) {
+            $domain_names = $project->getDomainNames();
+
+            if (in_array($new_domain, $domain_names, true)) {
+                if ($project->getId() == $projects->getId()) {
+                    return $this->json([
+                        'status' => "err",
+                        'result' => 'domaine already exists in this project'
+                    ]);
+                }
+                return $this->json([
+                    'status' => "err",
+                    'result' => 'domaine already exists in other project'
+                ]);
+            }
+        }
 
         $existingDomains = $projects->getDomainNames();
         $existingDomains[] = $newDomain;
