@@ -17,7 +17,7 @@ final class InputController extends AbstractController
 
 
     #[Route('/input', name: 'app_input_create', methods: ['POST'])]
-    public function create(Request $request, EntityManagerInterface $entityManager, ProjectsRepository $projectsRepository): JsonResponse {
+    public function create(Request $request, EntityManagerInterface $entityManager, ProjectsRepository $projectsRepository, InputRepository $inputRepository): JsonResponse {
 
         $data = json_decode($request->getContent(), true);
 
@@ -36,13 +36,30 @@ final class InputController extends AbstractController
             ]);
         }
 
-        $project = $projectsRepository->find($project_tag);
+        $project = $projectsRepository->findOneBy(['tag' => $project_tag]);
 
         if (!$project) {
 
             return $this->json([
                 'status' => 'err',
                 'message' => 'Project not found for this tag'
+            ]);
+        }
+
+        // éviter les doubles
+        $existingInputs = $inputRepository->findOneBy([
+            'project_tag' => $project,
+            'ip'         => $ip,
+            'page_name'   => $page_name,
+            'uri'        => $uri,
+            'is_login'    => $is_login
+        ]);
+
+        if ($existingInputs) {
+            return $this->json([
+                'status'  => 'error',
+                'message' => 'This input entry already exists.',
+                'result'  => $existingInputs
             ]);
         }
 
