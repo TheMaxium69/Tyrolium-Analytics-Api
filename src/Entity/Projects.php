@@ -12,11 +12,11 @@ class Projects
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['get:project','input:read'])]
+    #[Groups(['post:project', 'get:project','input:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['post:tag', 'get:project','input:read'])]
+    #[Groups(['post:project', 'get:project','input:read'])]
     private ?string $tag = null;
 
     #[ORM\Column(type: 'json')]
@@ -71,6 +71,18 @@ class Projects
         return $this;
     }
 
+    public function getUseritiumId(): ?int
+    {
+        return $this->useritium_id;
+    }
+
+    public function setUseritiumId(int $useritium_id): static
+    {
+        $this->useritium_id = $useritium_id;
+
+        return $this;
+    }
+
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->created_At;
@@ -83,15 +95,4 @@ class Projects
         return $this;
     }
 
-    public function getUseritiumId(): ?int
-    {
-        return $this->useritium_id;
-    }
-
-    public function setUseritiumId(int $useritium_id): static
-    {
-        $this->useritium_id = $useritium_id;
-
-        return $this;
-    }
 }

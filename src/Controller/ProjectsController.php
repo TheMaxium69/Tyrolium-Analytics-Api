@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -12,70 +13,102 @@ use App\Repository\ProjectsRepository;
 
 final class ProjectsController extends AbstractController
 {
-    #[Route('/tag', name: 'app_projects', methods: ['POST'])]
-    public function createTag(Request $request, EntityManagerInterface $em, projectsRepository $projectsRepo): Response
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private ProjectsRepository $projectsRepository
+    ) {}
+
+    #[Route('/create-project', name: 'create_project', methods: ['POST'])]
+    public function createProject(Request $request): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
 
-        $domain_names = $data['domain_names'];
-        $useritium_token = $data['useritium_token'];
+        $data = json_decode($request->getContent(), true); // Parsing objet JSON (JavaScript Object Notation)
 
-        if (!empty($domain_names)) {
+        if (!empty($data)) {
 
-            if(!empty($domain_names[0])) {
+            $form_domain_names = $data['domain_names'];
+            $form_useritium_token = $data['useritium_token'];
 
-                if (!empty($useritium_token)) {
+            if (!empty($form_domain_names)) {
 
-                    $projects = $projectsRepo->findAll();
-                    foreach ($projects as $project) {
-                        foreach ($project->getDomainNames() as $existingDomain) {
-                            if (in_array($existingDomain, $domain_names, true)) {
-                                return $this->json([
-                                        'status' => 'err',
-                                        'message' => 'Domain name already exists'
-                                    ]
-                                );
+                if(!empty($form_domain_names[0])) {
+
+                    if (!empty($form_useritium_token)) {
+
+                        // Requete a useritium-api -> du token -> si c'est good l'id et le groupe/role
+                        // conditions si il a le droit de créer un tag
+                        $useritium_id = 1; // c le resultat de l'api
+                        if ($useritium_id) {
+
+                            // Créer un projet
+                            $project = new Projects();
+
+                            // Je met l'utilisateur
+                            $project->setUseritiumId($useritium_id);
+
+                            // Domaine
+                            $projectAll = $this->projectsRepository->findAll();
+                            foreach ($projectAll as $projectOne) {
+
+                                $domainAll = $projectOne->getDomainNames();
+                                foreach ($domainAll as $domainOne) {
+
+                                    if (in_array($domainOne, $form_domain_names, true)) {
+                                        return $this->json([
+                                                'status' => 'err',
+                                                'message' => 'Domain name already exists'
+                                            ]
+                                        );
+                                    }
+
+                                }
                             }
+
+                            $project->setDomainNames($form_domain_names);
+
+                            // Tag
+                            $clef = uniqid(md5($form_domain_names[0]));
+                            $tag = 'TyroTag-' . $clef;
+                            $project->setTag($tag);
+
+                            $this->entityManager->persist($project);
+                            $this->entityManager->flush();
+
+                            return $this->json([
+                                'status' => "good",
+                                'message' => 'project created',
+                                'result' => $project
+                            ], 200, [], ['groups' => ['post:project']]); // verbe:entity
+
+                        } else {
+                            return $this->json([
+                                'status' => "err",
+                                'result' => 'useritium_token is invalide'
+                            ]);
                         }
+                    } else {
+                        return $this->json([
+                            'status' => "err",
+                            'result' => 'useritium_token is required'
+                        ]);
                     }
-
-                    $clef = uniqid(md5($domain_names[0]));
-                    $tag = 'TyroTag-' . $clef;
-
-                    $project = new Projects();
-                    $project->setTag($tag);
-                    $project->setDomainNames($domain_names);
-
-                    // Requete a useritium-api -> du token -> si c'est good l'id et le groupe/role
-                    // conditions si il a le droit de créer un tag
-                    $project->setUseritiumId(1); // Temporaire
-
-                    $em->persist($project);
-                    $em->flush();
-
-                    return $this->json([
-                        'status' => "good",
-                        'message' => 'project created',
-                        'result' => $project
-                    ], 200, [], ['groups' => ['post:tag']]);
 
                 } else {
                     return $this->json([
                         'status' => "err",
-                        'result' => 'useritium_token is required'
+                        'message' => 'domaine invalide'
                     ]);
                 }
-
             } else {
                 return $this->json([
                     'status' => "err",
-                    'message' => 'domaine invalide'
+                    'message' => 'no domaine name'
                 ]);
             }
         } else {
             return $this->json([
                 'status' => "err",
-                'message' => 'no domaine name'
+                'message' => 'json invalide'
             ]);
         }
     }
@@ -83,8 +116,8 @@ final class ProjectsController extends AbstractController
 
 
     // TODO : afficher toute le project (donc avec ces tag)
-    #[Route('/projects/getAll', name: 'app_projects_all', methods: ['GET'])]
-    public function getAllProjects(ProjectsRepository $projectsRepo): Response
+    #[Route('/get-project-all', name: 'get_project_all', methods: ['GET'])]
+    public function getProjectAll(ProjectsRepository $projectsRepo): Response
     {
         $projects = $projectsRepo->findAll();
 
@@ -95,10 +128,10 @@ final class ProjectsController extends AbstractController
         ], 200, [], ['groups' => ['get:project']]);
     }
 
-
+    // getOne
 
     // TODO : FINI TON CRUD (Delete)
-    #[Route('/projets/delete/{id}', name: 'app_projects_delete', methods: ['DELETE'])]
+    #[Route('/delete-projet/{id}', name: 'delete_project', methods: ['DELETE'])]
     public function getDeleteProjet(int $id, EntityManagerInterface $em, ProjectsRepository $projectsRepo): Response
     {
         $projects = $projectsRepo->find($id);
@@ -122,7 +155,7 @@ final class ProjectsController extends AbstractController
 
 
     // TODO : FINI TON CRUD (Update ajouter un domaine a un tag)
-    #[Route('/domain/update/{id}', name: 'app_domain_update', methods: ['PUT'])]
+    #[Route('/update-project/{id}', name: 'update_project', methods: ['PUT'])]
     public function getUpdateDomain(int $id, EntityManagerInterface $em, ProjectsRepository $projectsRepo, Request $request,): Response
     {
         $projects = $projectsRepo->find($id);
@@ -180,7 +213,18 @@ final class ProjectsController extends AbstractController
 
 }
 
-
+/*
+ *
+ * CRUD -> ENTITY (Projet)
+ *
+ * Create -> Entity (Projet) pour créer
+ * Read One -> Entity (Projet) By ID (ID)
+ * Read All -> ENtity (Projet) Tous ALL
+ * Update -> Entity (Projet) pour edit l'entity
+ * Delete -> Entity (Projet) pour supprimer le projet et donc le tag
+ *
+ *
+ */
 
 
 /*

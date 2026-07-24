@@ -19,7 +19,7 @@ class Input
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['input:read'])]
-    private ?Projects $project_tag = null;
+    private ?Projects $project = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Groups(['input:read'])]
@@ -57,14 +57,14 @@ class Input
         return $this;
     }
 
-    public function getProjectTag(): ?Projects
+    public function getProject(): ?Projects
     {
-        return $this->project_tag;
+        return $this->project;
     }
 
-    public function setProjectTag(?Projects $project_tag): static
+    public function setProject(?Projects $project): static
     {
-        $this->project_tag = $project_tag;
+        $this->project = $project;
 
         return $this;
     }
