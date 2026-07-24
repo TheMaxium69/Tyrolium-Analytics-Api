@@ -1,2 +1,2 @@
-# Tyrolium-Analytics-Api
-Api du projet Tyrolium Analytics
+# Tyrolium-Analytics
+Il s'agit d'un projet analytics des flux sur les sites web de tyrolium
