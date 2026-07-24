@@ -129,6 +129,15 @@ final class ProjectsController extends AbstractController
     }
 
     // getOne
+    #[Route('/get-projects-one/{id}', name: 'get_projects_one', methods: ['GET'])]
+    public function getProjectOne(Projects $project): Response
+    {
+        return $this->json([
+            'status' => 'good',
+            'message' => 'Project found',
+            'result' => $project
+        ], 200, [], ['groups' => ['get:project']]);
+    }
 
     // TODO : FINI TON CRUD (Delete)
     #[Route('/delete-projet/{id}', name: 'delete_project', methods: ['DELETE'])]
