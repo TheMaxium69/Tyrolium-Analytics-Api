@@ -21,14 +21,14 @@ final class InputController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
 
-        $project_tag = $data['project_tag'];
+        $project = $data['project'];
         $ip = $data['ip'];
         $page_name = $data['page_name'];
         $uri = $data['uri'];
         $is_login = $data['is_login'];
 
 
-        if (!isset($data['project_tag']) || !isset($data['ip']) || !isset($data['page_name']) || !isset($data['uri']) || !isset($data['is_login'])) {
+        if (!isset($data['project']) || !isset($data['ip']) || !isset($data['page_name']) || !isset($data['uri']) || !isset($data['is_login'])) {
 
             return $this->json([
                 'status' => 'error',
@@ -36,7 +36,7 @@ final class InputController extends AbstractController
             ]);
         }
 
-        $project = $projectsRepository->findOneBy(['tag' => $project_tag]);
+        $project = $projectsRepository->findOneBy(['tag' => $project]);
 
         if (!$project) {
 
@@ -48,7 +48,7 @@ final class InputController extends AbstractController
 
         // éviter les doubles
         $existingInputs = $inputRepository->findOneBy([
-            'project_tag' => $project,
+            'project' => $project,
             'ip'         => $ip,
             'page_name'   => $page_name,
             'uri'        => $uri,
@@ -64,7 +64,7 @@ final class InputController extends AbstractController
         }
 
         $input = new Input();
-        $input->setProjectTag($project);
+        $input->setProject($project);
 
 
         $input->setIp($ip);
@@ -104,11 +104,11 @@ final class InputController extends AbstractController
     #[Route('/input/search', name: 'app_input_search', methods: ['GET'])]                       // TODO : une route read by project (je te donne l'id d'un projet et tu me donne seulement ces vue a lui)
     public function search(Request $request, InputRepository $inputRepository, ProjectsRepository $projectsRepository): JsonResponse {  // TODO : avec l'id de useritium et avec l'ip aussi, et chaque page, uri, ip
 
-        $project_tag = $request->query->get('project_tag');
+        $project = $request->query->get('project');
 
-        if ($project_tag !==null) {
-            $project_tag = $projectsRepository->find($project_tag);
-            if (!$project_tag) {
+        if ($project !==null) {
+            $project = $projectsRepository->find($project);
+            if (!$project) {
                 return $this->json([
                     'status' => 'error',
                     'message' => 'No project tag found.',
@@ -119,7 +119,7 @@ final class InputController extends AbstractController
 
 
         $filters = [
-            'project_tag' => $request->query->get('project_tag'),
+            'project' => $request->query->get('project'),
             'useritiumId' => $request->query->get('useritium_id'),
             'ip' => $request->query->get('ip'),
             'pageName' => $request->query->get('page_name'),
